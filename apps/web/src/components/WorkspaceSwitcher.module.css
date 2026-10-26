@@ -1,0 +1,114 @@
+.wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 30px;
+  padding: 0 9px 0 6px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--ui-radius-control);
+  background: var(--bg-panel);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--ui-label-font-size);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 160ms cubic-bezier(0.23, 1, 0.32, 1),
+    border-color 160ms cubic-bezier(0.23, 1, 0.32, 1);
+  line-height: var(--ui-label-line-height);
+}
+.trigger:hover {
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg-panel));
+  border-color: color-mix(in srgb, var(--accent) 28%, var(--border));
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--accent) 22%, var(--bg-panel));
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 720;
+  flex-shrink: 0;
+}
+
+.name {
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 40;
+  min-width: 200px;
+  padding: var(--ui-space-6);
+  border: 1px solid var(--border);
+  border-radius: var(--ui-radius-surface);
+  background: var(--bg-panel);
+  box-shadow: var(--ui-shadow-popover);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-space-2);
+  animation: workspace-switcher-in 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@keyframes workspace-switcher-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  border: none;
+  border-radius: var(--ui-radius-surface);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: var(--ui-body-font-size);
+  text-align: left;
+  cursor: pointer;
+  line-height: var(--ui-body-line-height);
+}
+.item:not(:disabled):hover {
+  background: color-mix(in srgb, var(--accent) 9%, var(--bg-panel));
+}
+.item:disabled {
+  cursor: default;
+}
+
+.itemCurrent {
+  font-weight: 600;
+}
+.itemName {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.divider {
+  height: 1px;
+  margin: 4px 2px;
+  background: var(--border-soft);
+}

@@ -1,0 +1,52 @@
+name: hqzy-design-agents
+services:
+  open-design:
+    image: ${OPEN_DESIGN_IMAGE:-hqzy-open-design:0.21.1-agents-20261010-r4-amd64}
+    platform: linux/amd64
+    restart: unless-stopped
+    environment:
+      OD_DATA_DIR: /app/.od
+      OD_API_TOKEN: ${OD_API_TOKEN:?Set OD_API_TOKEN in .env}
+      OD_API_BASIC_USERNAME: ${OD_API_BASIC_USERNAME:-hqzy-design}
+      OD_ALLOWED_ORIGINS: ${OPEN_DESIGN_ALLOWED_ORIGINS:-}
+      OD_WEB_PORT: ${OPEN_DESIGN_PORT:-7456}
+      OD_WHATS_NEW_ENABLED: '0'
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    ports:
+      - '127.0.0.1:${OPEN_DESIGN_PORT:-7456}:7456'
+    volumes:
+      - open_design_data:/app/.od
+    tmpfs:
+      - /tmp:mode=1777
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: ${OPEN_DESIGN_MEM_LIMIT:-4g}
+    pids_limit: 1024
+    stop_grace_period: 30s
+  # DSH deliberately binds its configuration page to loopback only. On the
+  # target Linux server, host networking preserves that loopback boundary and
+  # lets the operator reach it through SSH forwarding.
+  dsh-setup:
+    profiles: [setup]
+    image: ${OPEN_DESIGN_IMAGE:-hqzy-open-design:0.21.1-agents-20261010-r4-amd64}
+    platform: linux/amd64
+    network_mode: host
+    command: ['dsh', 'web', '--host', '127.0.0.1', '--port', '${DSH_SETUP_PORT:-3080}', '--no-open']
+    environment:
+      OD_DATA_DIR: /app/.od
+    volumes:
+      - open_design_data:/app/.od
+    tmpfs:
+      - /tmp:mode=1777
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      disable: true
+    mem_limit: 1g
+    pids_limit: 512
+volumes:
+  open_design_data:

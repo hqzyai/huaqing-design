@@ -1,0 +1,21 @@
+/* Keep the blue brand mark inside the existing Home slot without changing hit geometry.
+   The global workspace-chrome-logo hook preserves the collapsed-rail hover swap. */
+.brandLogo {
+  display: block;
+  width: 28px;
+  max-width: 100%;
+  height: 28px;
+  object-fit: contain;
+  flex: 0 0 auto;
+  user-select: none;
+}
+
+.brandSlot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 0 auto;
+  flex: 0 0 auto;
+  line-height: 0;
+}

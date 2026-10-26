@@ -1,0 +1,17 @@
+:where(.glyph) {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* Non-scaling strokes remain 1.75 CSS px even when a retained compact slot or
+   a rem-sized consumer overrides the SVG dimensions. No JS size measurement. */
+.glyph > :is(path, line, polyline, polygon, rect, circle, ellipse) {
+  vector-effect: non-scaling-stroke;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glyph:global(.icon-spin) {
+    animation: none;
+  }
+}

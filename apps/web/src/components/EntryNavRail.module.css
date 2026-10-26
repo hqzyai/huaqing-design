@@ -1,0 +1,204 @@
+/* Team-edition additions to the entry nav rail. The rail's structural classes
+   (`entry-nav-rail`, `__group`, `__btn`, `__footer`) stay global in
+   `styles/home/entry-layout.css`; these module classes own only the new
+   team/local shell pieces (workspace identity strip, search, section label,
+   sign-in callout, locked banner, footer social). */
+
+.workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 2px 0 6px;
+}
+
+.workspaceRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Stretch the reused WorkspaceSwitcher trigger to fill the rail width. */
+.workspaceRow > :global(div) {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+}
+.workspaceRow > :global(div) > button {
+  flex: 1;
+  min-width: 0;
+  justify-content: flex-start;
+}
+
+.planChip {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  padding: 0 9px;
+  border-radius: var(--ui-radius-small);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border));
+  background: var(--accent-tint, color-mix(in srgb, var(--accent) 10%, transparent));
+  color: var(--accent);
+  font-size: var(--ui-badge-font-size);
+  font-weight: 500;
+  cursor: default;
+  text-transform: none;
+  line-height: var(--ui-badge-line-height);
+}
+.planChip.clickable {
+  cursor: pointer;
+}
+.planChip.clickable:hover {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  margin: 2px 0 4px;
+  padding: 0 10px;
+  border: 1px solid var(--border-soft, var(--border));
+  border-radius: var(--ui-radius-control);
+  background: color-mix(in srgb, var(--text) 4%, var(--bg-panel));
+  color: var(--text-muted);
+}
+.search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: var(--ui-input-font-size);
+  outline: none;
+  cursor: text;
+  line-height: var(--ui-input-line-height);
+}
+
+.sectionLabel {
+  margin: 10px 4px 2px;
+  font-size: var(--ui-caption-font-size);
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--text-muted) 90%, transparent);
+  line-height: var(--ui-caption-line-height);
+}
+
+.divider {
+  height: 1px;
+  margin: 8px 2px;
+  background: color-mix(in srgb, var(--border) 70%, transparent);
+}
+
+/* Local-mode "sign in to the cloud" callout. */
+.callout {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 12px 2px 4px;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--border));
+  border-radius: var(--ui-radius-panel);
+  background: color-mix(in srgb, var(--accent) 7%, var(--bg-panel));
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: var(--text);
+  transition: background 160ms cubic-bezier(0.23, 1, 0.32, 1),
+    border-color 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.callout:hover {
+  background: color-mix(in srgb, var(--accent) 12%, var(--bg-panel));
+  border-color: color-mix(in srgb, var(--accent) 36%, var(--border));
+}
+.calloutHead {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: var(--ui-body-font-size);
+  font-weight: 500;
+  color: var(--text-strong, var(--text));
+  line-height: var(--ui-body-line-height);
+}
+.calloutIcon {
+  display: inline-flex;
+  color: var(--accent);
+}
+.calloutBody {
+  margin: 0;
+  font-size: var(--ui-caption-font-size);
+  line-height: var(--ui-caption-line-height);
+  color: var(--text-muted);
+}
+
+/* Locked-workspace banner. */
+.locked {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 8px 2px;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--red) 40%, var(--border));
+  border-radius: var(--ui-radius-surface);
+  background: color-mix(in srgb, var(--red) 8%, var(--bg-panel));
+}
+.lockedHead {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: var(--ui-body-font-size);
+  font-weight: 500;
+  color: var(--red);
+  line-height: var(--ui-body-line-height);
+}
+.lockedAction {
+  align-self: flex-start;
+  margin-top: 2px;
+  padding: 4px 10px;
+  border: 1px solid color-mix(in srgb, var(--red) 40%, var(--border));
+  border-radius: var(--ui-radius-surface);
+  background: transparent;
+  color: var(--red);
+  font: inherit;
+  font-size: var(--ui-caption-font-size);
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  line-height: var(--ui-caption-line-height);
+}
+.lockedAction:hover {
+  background: color-mix(in srgb, var(--red) 12%, transparent);
+}
+
+/* Footer social row (moved off the top bar). */
+.social {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  width: 100%;
+  padding: 0 8px 4px;
+}
+.socialLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--ui-radius-surface);
+  border: 1px solid var(--border-soft, var(--border));
+  background: var(--bg-panel);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 140ms cubic-bezier(0.23, 1, 0.32, 1),
+    color 140ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.socialLink:hover {
+  background: color-mix(in srgb, var(--accent) 10%, var(--bg-panel));
+  color: var(--accent);
+}

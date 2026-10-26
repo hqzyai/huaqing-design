@@ -1,0 +1,79 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1600;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(15, 15, 15, 0.38);
+}
+
+.modal {
+  width: min(440px, calc(100vw - 32px));
+  padding: var(--ui-space-20) var(--ui-space-24) var(--ui-space-24);
+  border: 1px solid var(--border-strong, var(--border));
+  border-radius: var(--ui-radius-panel);
+  background: var(--bg-panel);
+  color: var(--text);
+  box-shadow:
+    var(--ui-shadow-modal);
+}
+
+.head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.title {
+  flex: 1 1 auto;
+  margin: 0 0 14px;
+  color: var(--text-strong);
+  font-size: var(--ui-card-title-font-size);
+  font-weight: 600;
+  line-height: var(--ui-card-title-line-height);
+}
+
+.close {
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: var(--ui-radius-surface);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus-visible {
+  outline: none;
+  background: var(--bg-subtle);
+  color: var(--text);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: var(--text-muted);
+  font-size: var(--ui-body-font-size);
+  line-height: var(--ui-body-line-height);
+}
+
+.steps {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding-left: 20px;
+}
+
+.note {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+  font-size: var(--ui-caption-font-size);
+  line-height: var(--ui-caption-line-height);
+}

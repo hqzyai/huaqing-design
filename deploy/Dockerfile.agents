@@ -1,0 +1,144 @@
+# syntax=docker/dockerfile:1
+# Self-contained Linux server image. Build from the current workspace, not GHCR.
+ARG NODE_IMAGE=docker.io/library/node:24.20.0-bookworm-slim@sha256:ba849c60be29959425b8734d57b8b4b7d56f98edd9504c9af091d5281095a71e
+ARG HERMES_IMAGE=docker.io/nousresearch/hermes-agent@sha256:9774f4f39a9bb8c2f68ce728ed5e99ddbad282163be56764afacf88ed952b784
+
+# JS and static HTML are architecture-neutral. Running Next's native compiler
+# on BUILDPLATFORM avoids unsupported CPU instructions under x86 emulation.
+# Target-platform native dependencies still come exclusively from `build`.
+FROM --platform=$BUILDPLATFORM ${NODE_IMAGE} AS native-build
+ENV CI=true ELECTRON_SKIP_BINARY_DOWNLOAD=1 NEXT_TELEMETRY_DISABLED=1
+ENV NODE_OPTIONS=--max-old-space-size=3072
+WORKDIR /app
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages ./packages
+COPY tools ./tools
+COPY apps/daemon/package.json ./apps/daemon/package.json
+COPY apps/web/package.json ./apps/web/package.json
+COPY e2e/package.json ./e2e/package.json
+RUN --mount=type=cache,id=hqzy-agents-pnpm,target=/root/.local/share/pnpm/store \
+    corepack enable && corepack prepare pnpm@10.33.2 --activate && \
+    pnpm install --frozen-lockfile --ignore-scripts
+COPY apps/daemon ./apps/daemon
+COPY apps/web ./apps/web
+RUN pnpm -r --workspace-concurrency=1 --filter '@open-design/web...' \
+    --filter '@open-design/daemon...' --if-present run build
+
+FROM ${NODE_IMAGE} AS build
+ENV CI=true ELECTRON_SKIP_BINARY_DOWNLOAD=1 NEXT_TELEMETRY_DISABLED=1
+ENV NODE_OPTIONS=--max-old-space-size=3072
+RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ git ca-certificates && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY scripts/postinstall.mjs ./scripts/postinstall.mjs
+COPY packages ./packages
+COPY tools ./tools
+COPY apps/daemon/package.json ./apps/daemon/package.json
+COPY apps/web/package.json ./apps/web/package.json
+COPY e2e/package.json ./e2e/package.json
+# This deployment uses cloud models. Keep ONNX's CPU backend; avoid its optional
+# 225 MB CUDA download (the upstream installer ignores conventional proxies).
+RUN --mount=type=cache,id=hqzy-agents-pnpm,target=/root/.local/share/pnpm/store \
+    corepack enable && corepack prepare pnpm@10.33.2 --activate && \
+    ONNXRUNTIME_NODE_INSTALL_CUDA=skip pnpm install --frozen-lockfile
+COPY apps/daemon ./apps/daemon
+COPY apps/web ./apps/web
+COPY deploy/agents/pack-companion.ts ./deploy/agents/pack-companion.ts
+COPY --from=native-build /app/apps/daemon/dist ./apps/daemon/dist
+# The legacy deployment installer replays the workspace's postinstall. All
+# workspace outputs are already built above; suppress only that duplicate
+# workspace hook in this disposable build stage. Dependency native hooks run.
+RUN node -e "const fs=require('fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); delete p.scripts.postinstall; fs.writeFileSync('package.json',JSON.stringify(p,null,2));"
+RUN --mount=type=cache,id=hqzy-agents-pnpm,target=/root/.local/share/pnpm/store \
+    ONNXRUNTIME_NODE_INSTALL_CUDA=skip pnpm --filter @open-design/daemon deploy --legacy --prod /opt/app-daemon && \
+    pnpm -C packages/dsh-runtime pack --pack-destination /opt/agent-resources/agent-runtimes/deepseek-harness && \
+    node deploy/agents/pack-companion.ts /opt/agent-resources/agent-runtimes/deepseek-harness
+# node-pty publishes no Linux prebuild and is intentionally not in the workspace
+# install-script allowlist. Compile its native terminal bridge for this image.
+RUN node /usr/local/lib/node_modules/npm/node_modules/node-gyp/bin/node-gyp.js \
+      rebuild --directory /opt/app-daemon/node_modules/node-pty --nodedir=/usr/local && \
+    node -e "require('/opt/app-daemon/node_modules/node-pty')"
+
+# Resolve npm's large peer graph natively. The lock records all optional
+# platforms; npm ci below installs and builds only the target-platform runtime.
+FROM --platform=$BUILDPLATFORM ${NODE_IMAGE} AS dsh-lock
+COPY --from=build /opt/agent-resources /opt/agent-resources
+WORKDIR /opt/dsh
+# Keep the prerelease family coherent; see the repository's install-dsh.sh.
+RUN npm install --prefix /opt/dsh --package-lock-only --ignore-scripts --legacy-peer-deps --no-audit --no-fund \
+    --before=2026-08-21T13:00:00Z \
+    @deepseek-ai/dsh@0.1.1-rc.2 pnpm@11.7.0
+COPY deploy/agents/complete-dsh-peers.ts /tmp/complete-dsh-peers.ts
+RUN node /tmp/complete-dsh-peers.ts /opt/dsh /opt/dsh-complete
+
+FROM ${NODE_IMAGE} AS deepseek
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl python3 make g++ git && rm -rf /var/lib/apt/lists/*
+COPY --from=build /opt/agent-resources /opt/agent-resources
+COPY --from=dsh-lock /opt/dsh/package.json /opt/dsh/package-lock.json /opt/dsh/
+RUN npm ci --prefix /opt/dsh --omit=dev --legacy-peer-deps --no-audit --no-fund && npm cache clean --force
+COPY --from=dsh-lock /opt/dsh-complete/package.json /opt/dsh-complete/package-lock.json /opt/dsh/
+RUN npm install --prefix /opt/dsh --omit=dev --legacy-peer-deps --no-audit --no-fund \
+      --before=2026-08-21T13:00:00Z && npm cache clean --force
+# npm 11 blocks dependency lifecycle scripts by default. Approve the exact
+# installed native/runtime packages and materialize their platform helpers.
+RUN npm --prefix /opt/dsh install-scripts approve @deepseek-ai/dsh-subprocess-local koffi node-pty protobufjs && \
+    npm --prefix /opt/dsh rebuild @deepseek-ai/dsh-subprocess-local koffi node-pty protobufjs --nodedir=/usr/local && \
+    node -e "require('/opt/dsh/node_modules/node-pty'); require('/opt/dsh/node_modules/koffi')"
+ENV PATH=/opt/dsh/node_modules/.bin:$PATH
+RUN DSH_HOME=/opt/agent-seed/dsh dsh plugin --profile open-design add \
+      /opt/agent-resources/agent-runtimes/deepseek-harness/open-design-dsh-runtime-0.1.0.tgz && \
+    DSH_HOME=/opt/agent-seed/dsh dsh --profile open-design --probe
+# DeepSeek TUI was renamed CodeWhale; OD already supports its codewhale binary.
+# Fixed official release binary and checksum, not a floating installation script.
+RUN curl -fL --retry 4 --retry-all-errors \
+      https://github.com/codewhale-hq/Codewhale/releases/download/v0.10.1/codewhale-linux-x64 \
+      -o /usr/local/bin/codewhale && \
+    echo 'ed2d83b3853de803ee39f574c745d1e1c9f6f8bf99ed3aec3835425e0c26993b  /usr/local/bin/codewhale' | sha256sum -c - && \
+    chmod 755 /usr/local/bin/codewhale && codewhale --version && codewhale exec --help
+
+FROM ${HERMES_IMAGE} AS runtime
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends tini poppler-utils && rm -rf /var/lib/apt/lists/* && \
+    groupadd --gid 1001 open-design && useradd --uid 1001 --gid 1001 --no-create-home open-design
+COPY --from=deepseek /usr/local /opt/node
+COPY --from=deepseek /opt/dsh /opt/dsh
+COPY --from=deepseek /opt/agent-seed /opt/agent-seed
+COPY --from=build /opt/agent-resources/ /app/
+# Keep the file dependency used by the preinstalled DSH profile resolvable.
+COPY --from=build /opt/agent-resources /opt/agent-resources
+COPY --from=build /opt/app-daemon /app/apps/daemon
+COPY --from=native-build /app/apps/web/out /app/apps/web/out
+COPY package.json LICENSE /app/
+COPY skills /app/skills
+COPY design-templates /app/design-templates
+COPY design-systems /app/design-systems
+COPY craft /app/craft
+COPY prompt-templates /app/prompt-templates
+COPY assets/frames /app/assets/frames
+COPY assets/community-pets /app/assets/community-pets
+COPY data/plugin-previews/manifest.json /app/data/plugin-previews/manifest.json
+COPY plugins/_official /app/plugins/_official
+COPY deploy/agents/entrypoint.ts deploy/agents/dsh.ts /app/deploy/agents/
+COPY deploy/agents/CODEWHALE-LICENSE /usr/share/doc/codewhale/copyright
+RUN ln -s /app/deploy/agents/dsh.ts /usr/local/bin/dsh && chmod 755 /app/deploy/agents/dsh.ts && \
+    ln -s /app/apps/daemon/bin/od.mjs /usr/local/bin/od && chmod 755 /app/apps/daemon/bin/od.mjs && \
+    mkdir -p /app/.od && chown 1001:1001 /app/.od
+ARG IMAGE_VERSION=0.21.1-hqzy-agents
+ARG SOURCE_REVISION=working-tree
+LABEL org.opencontainers.image.title="华清智言 design — bundled agents" \
+      org.opencontainers.image.version=$IMAGE_VERSION \
+      org.opencontainers.image.revision=$SOURCE_REVISION \
+      io.hqzy.agents.dsh="0.1.1-rc.2" \
+      io.hqzy.agents.codewhale="0.10.1" \
+      io.hqzy.agents.hermes="0.21.6"
+ENV PATH=/opt/node/bin:/usr/local/bin:/opt/dsh/node_modules/.bin:/opt/hermes/bin:/opt/hermes/.venv/bin:/usr/bin:/bin
+ENV NODE_ENV=production OD_BIND_HOST=0.0.0.0 OD_PORT=7456 OD_SANDBOX_MODE=1
+ENV OD_WHATS_NEW_ENABLED=0
+ENV NODE_OPTIONS=--max-old-space-size=2048
+WORKDIR /app
+USER open-design
+EXPOSE 7456 3080
+HEALTHCHECK --interval=30s --timeout=10s --start-period=180s --retries=3 \
+  CMD node -e "fetch('http://127.0.0.1:7456/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+ENTRYPOINT ["/usr/bin/tini", "--", "node", "/app/deploy/agents/entrypoint.ts"]
+CMD []

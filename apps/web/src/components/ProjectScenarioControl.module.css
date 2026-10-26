@@ -1,0 +1,8 @@
+.restoreButton {
+  min-height: 26px;
+  padding: 3px 8px;
+  border-radius: var(--ui-radius-control);
+  font-size: var(--ui-label-font-size);
+  white-space: nowrap;
+  line-height: var(--ui-label-line-height);
+}

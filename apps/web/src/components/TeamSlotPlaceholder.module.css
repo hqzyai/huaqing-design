@@ -1,0 +1,58 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ui-space-12);
+  max-width: 420px;
+  margin: 72px auto 0;
+  padding: 40px var(--ui-space-24);
+  text-align: center;
+  border: 1px dashed var(--border);
+  border-radius: var(--ui-radius-panel);
+  background: color-mix(in srgb, var(--bg-panel) 92%, transparent);
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  color: var(--accent);
+  background: var(--accent-tint, color-mix(in srgb, var(--accent) 12%, transparent));
+}
+
+.title {
+  margin: 0;
+  font-size: var(--ui-section-title-font-size);
+  font-weight: 600;
+  color: var(--text-strong, var(--text));
+  line-height: var(--ui-section-title-line-height);
+}
+
+.note {
+  margin: 0;
+  font-size: var(--ui-body-font-size);
+  line-height: var(--ui-body-line-height);
+  color: var(--text-muted);
+}
+
+.detail {
+  margin: 0;
+  font-size: var(--ui-body-font-size);
+  line-height: var(--ui-body-line-height);
+  color: color-mix(in srgb, var(--text-muted) 88%, transparent);
+}
+
+.badge {
+  margin-top: 4px;
+  padding: 3px 10px;
+  font-size: var(--ui-badge-font-size);
+  font-weight: 500;
+  border-radius: var(--ui-radius-small);
+  color: var(--text-muted);
+  background: color-mix(in srgb, var(--text-muted) 12%, transparent);
+  line-height: var(--ui-badge-line-height);
+}

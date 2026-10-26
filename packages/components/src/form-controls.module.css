@@ -1,0 +1,74 @@
+/* shadcn/ui Input/Textarea visual states with native sizing and events.
+   See ../SHADCN.md. No field-sizing/content autosize or new DOM wrappers. */
+:where(.control) {
+  font: inherit;
+  color: var(--text);
+  background: var(--bg-panel);
+  border: var(--stroke-thin, 1px) solid var(--ui-input, var(--border));
+  box-shadow: none;
+  border-radius: var(--ui-radius-control, 6px);
+  padding: calc((var(--ui-control-min-height, 36px) - var(--ui-input-line-height, 20px) - 2px) / 2) var(--ui-standard-control-padding-inline, 12px);
+  width: 100%;
+  transition:
+    border-color var(--duration-faster, 100ms) var(--curve-easy-ease, ease),
+    box-shadow var(--duration-faster, 100ms) var(--curve-easy-ease, ease);
+  font-family: var(--sans);
+  font-size: var(--ui-input-font-size, 14px);
+  line-height: var(--ui-input-line-height, 20px);
+  font-weight: 400;
+}
+
+:where(.control)::placeholder {
+  color: var(--text-faint);
+}
+
+:where(.control):focus {
+  outline: var(--ui-focus-width, 2px) solid var(--ui-ring, var(--selected));
+  border-color: var(--ui-ring, var(--selected));
+  box-shadow: none;
+  outline-offset: var(--ui-focus-offset, 2px);
+}
+
+:where(.textarea) {
+  resize: vertical;
+  font-family: inherit;
+}
+
+:where(.select) {
+  padding-right: 32px;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2374716b' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px 16px;
+}
+
+:where(.select)::-ms-expand {
+  display: none;
+}
+
+[data-theme='dark'] :where(.select) {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239a9690' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E");
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme]) :where(.select) {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239a9690' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E");
+  }
+}
+
+:where(.control)[aria-invalid='true'] {
+  border-color: var(--ui-destructive, var(--red));
+  box-shadow: none;
+}
+
+:where(.control):disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+:where(.control)[readonly] {
+  background: var(--ui-muted, var(--bg-subtle));
+  color: var(--ui-foreground, var(--text));
+}

@@ -1,0 +1,345 @@
+/* -------- Buttons --------------------------------------------------- */
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-8, 8px);
+  font: inherit;
+  height: auto;
+  padding: calc((var(--ui-control-min-height, 36px) - var(--ui-button-line-height, 20px) - 2px) / 2) var(--ui-standard-control-padding-inline, 12px);
+  font-size: var(--ui-button-font-size, 0.875rem);
+  font-weight: 500;
+  line-height: var(--ui-button-line-height, 1.25rem);
+  white-space: nowrap;
+  color: var(--text);
+  background: transparent;
+  border: var(--stroke-thin, 1px) solid var(--border);
+  border-radius: var(--ui-radius-control, 6px);
+  cursor: pointer;
+  transition:
+    background-color var(--duration-ultra-fast, 50ms) var(--curve-easy-ease, ease),
+    border-color var(--duration-ultra-fast, 50ms) var(--curve-easy-ease, ease),
+    color var(--duration-ultra-fast, 50ms) var(--curve-easy-ease, ease),
+    transform var(--duration-faster, 100ms) var(--curve-easy-ease, ease),
+    box-shadow var(--duration-ultra-fast, 50ms) var(--curve-easy-ease, ease);
+  font-family: var(--sans);
+  border-color: var(--ui-input, var(--border));
+  box-shadow: none;
+}
+button:hover:not(:disabled) { background: var(--ui-outline-hover, var(--bg-subtle)); border-color: var(--ui-input, var(--border)); }
+button:active:not(:disabled) { transform: translateY(1px); background: var(--ui-outline-active, var(--bg-muted)); }
+button:focus-visible { outline: var(--ui-focus-width, 2px) solid var(--ui-ring, var(--selected)); outline-offset: var(--ui-focus-offset, 2px); }
+
+button.primary {
+  background: var(--ui-primary, var(--text-strong));
+  border-color: var(--ui-primary, var(--text-strong));
+  border-radius: var(--ui-radius-control, var(--radius-sm));
+  color: var(--ui-primary-foreground, var(--bg));
+}
+button.primary:hover:not(:disabled) {
+  background: var(--ui-primary-hover, #303030);
+  border-color: var(--ui-primary-hover, #303030);
+}
+button.primary:active:not(:disabled) {
+  background: var(--ui-primary-active, #404040);
+  border-color: var(--ui-primary-active, #404040);
+}
+button.primary-ghost {
+  background: var(--ui-secondary, var(--bg-subtle));
+  border-color: transparent;
+  color: var(--ui-secondary-foreground, var(--text-strong));
+}
+button.primary-ghost:hover:not(:disabled) { background: var(--ui-subtle-hover, #eeeeee); border-color: transparent; }
+button.primary-ghost:active:not(:disabled) { background: var(--ui-subtle-active, #e5e5e5); border-color: transparent; }
+
+button.ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--ui-foreground, var(--text));
+}
+button.ghost:hover:not(:disabled) { background: var(--ui-outline-hover, #f5f5f5); border-color: transparent; }
+button.ghost:active:not(:disabled) { background: var(--ui-outline-active, #eeeeee); border-color: transparent; }
+/*
+ * Transient success state for ghost buttons. Used by the Media
+ * Providers "Reload from daemon" button after a successful reload —
+ * the button briefly turns green with a check icon for ~2s then snaps
+ * back to its idle treatment, replacing what used to be a permanent
+ * success paragraph under the section header. Reusable on any
+ * ghost button that wants the same "did it" pulse.
+ */
+button.ghost.is-success-flash {
+  border-color: var(--green-border, color-mix(in srgb, #1f9d55 32%, var(--border)));
+  background: var(--green-bg, color-mix(in srgb, #1f9d55 8%, transparent));
+  color: var(--green, #137a3d);
+}
+button.ghost.is-success-flash:hover:not(:disabled) {
+  background: var(--green-bg, color-mix(in srgb, #1f9d55 14%, transparent));
+}
+button.ghost.is-success-flash svg {
+  color: currentColor;
+}
+
+/*
+ * Visually-hidden but assistive-tech accessible. We use it to keep
+ * a `role="status"` live-region for actions whose visible feedback
+ * is too transient (e.g. a 2s button-label flash) for a screen
+ * reader to catch reliably. Borrowed from Tailwind's `sr-only` so
+ * it reads as the same primitive everyone already knows.
+ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+button.subtle {
+  background: var(--ui-secondary, var(--bg-subtle));
+  border-color: transparent;
+  color: var(--ui-secondary-foreground, var(--text-strong));
+}
+button.subtle:hover:not(:disabled) { background: var(--ui-subtle-hover, #eeeeee); border-color: transparent; }
+button.subtle:active:not(:disabled) { background: var(--ui-subtle-active, #e5e5e5); border-color: transparent; }
+
+button.icon-btn {
+  min-width: var(--ui-icon-button-size, 36px);
+  height: var(--ui-icon-button-size, 36px);
+  padding: 0;
+  border-radius: var(--ui-radius-control, 6px);
+}
+button.is-selected,
+button[aria-pressed="true"] {
+  border-color: var(--border-selected);
+}
+button:disabled {
+  cursor: not-allowed;
+  transform: none;
+  opacity: var(--ui-disabled-opacity, 0.5);
+}
+
+/* -------- Inputs ---------------------------------------------------- */
+input, textarea, select {
+  font: inherit;
+  color: var(--text);
+  background: var(--bg-panel);
+  border: var(--stroke-thin, 1px) solid var(--ui-input, var(--border));
+  box-shadow: none;
+  border-radius: var(--ui-radius-control, 6px);
+  padding: calc((var(--ui-control-min-height, 36px) - var(--ui-input-line-height, 20px) - 2px) / 2) var(--ui-standard-control-padding-inline, 12px);
+  width: 100%;
+  transition:
+    border-color var(--duration-faster, 100ms) var(--curve-easy-ease, ease),
+    box-shadow var(--duration-faster, 100ms) var(--curve-easy-ease, ease);
+  font-family: var(--sans);
+  font-size: var(--ui-input-font-size, 14px);
+  line-height: var(--ui-input-line-height, 20px);
+  font-weight: 400;
+}
+input::placeholder, textarea::placeholder { color: var(--text-faint); }
+input:focus, textarea:focus, select:focus {
+  outline: var(--ui-focus-width, 2px) solid var(--ui-ring, var(--selected));
+  border-color: var(--ui-ring, var(--selected));
+  box-shadow: none;
+  outline-offset: var(--ui-focus-offset, 2px);
+}
+/* Entry sidebar form fields keep a quieter, neutral focus so the orange
+   "Create" CTA stays the loudest thing in the panel. A low-opacity black
+   halo reads as "focused" without re-introducing the global blue/accent
+   ring. Using rgba directly because the Next CSS pipeline collapses
+   `color-mix(in srgb, var(--text) 8%, transparent)` to a solid var(--text)
+   ring (would render a 3px black band — too loud). */
+.entry-side input:focus,
+.entry-side textarea:focus,
+.entry-side select:focus {
+  border-color: var(--ui-ring, var(--selected));
+  box-shadow: none;
+}
+/* Native <select> on macOS uses its own intrinsic min-height that ends up
+   shorter than <input> at the same `padding: 7px 10px` rule above, so any
+   form that flex-aligns an input next to a select (e.g. the memory editor's
+   Title + Type row) renders with mismatched heights. Stripping the native
+   chrome lets the shared padding and inherited line-height compute the
+   same box dimensions as the input, then we paint our own chevron via a
+   background SVG. The chevron color is a per-theme override so it stays
+   readable against the panel in both light and dark. */
+select {
+  padding-right: 32px;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2374716b' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px 16px;
+}
+select::-ms-expand { display: none; }
+[data-theme='dark'] select {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239a9690' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px 16px;
+}
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme]) select {
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239a9690' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px 16px;
+  }
+}
+textarea { resize: vertical; font-family: inherit; }
+
+.od-select {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+.od-select-trigger {
+  width: 100%;
+  min-width: 0;
+  min-height: var(--ui-control-min-height, 2.25rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: var(--ui-space-6, 0.375rem) var(--ui-standard-control-padding-inline, 0.75rem);
+  font: inherit;
+  color: var(--text);
+  text-align: left;
+  background: var(--bg-panel);
+  border: var(--stroke-thin, 1px) solid var(--border);
+  border-radius: var(--ui-radius-control, var(--radius-sm));
+  cursor: pointer;
+  transition:
+    border-color var(--duration-faster, 100ms) var(--curve-easy-ease, ease),
+    box-shadow var(--duration-faster, 100ms) var(--curve-easy-ease, ease),
+    background var(--duration-faster, 100ms) var(--curve-easy-ease, ease);
+  font-size: var(--ui-input-font-size, 0.875rem);
+  line-height: var(--ui-input-line-height, 1.25rem);
+  border-color: var(--ui-input, var(--border-strong));
+}
+.od-select-trigger:hover:not(:disabled),
+.od-select-trigger[aria-expanded='true'] {
+  border-color: var(--border-strong);
+  background: var(--bg-subtle);
+}
+.od-select-trigger:focus-visible,
+.od-select-trigger[aria-expanded='true'] {
+  outline: var(--ui-focus-width, 2px) solid var(--ui-ring, var(--selected));
+  border-color: var(--selected);
+  box-shadow: none;
+  outline-offset: var(--ui-focus-offset, 2px);
+}
+.od-select-trigger:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.od-select-trigger svg {
+  color: var(--text-muted);
+  transition: transform 120ms ease;
+}
+.od-select-trigger[aria-expanded='true'] svg {
+  transform: rotate(180deg);
+}
+.od-select-value,
+.od-select-option-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.od-select-menu {
+  z-index: 9000;
+  padding: var(--ui-layout-menu-padding, 0.25rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  max-width: calc(100vw - 24px);
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--ui-radius-surface, var(--radius));
+  box-shadow: var(--ui-shadow-popover, 0 4px 12px rgb(0 0 0 / 0.08), 0 1px 3px rgb(0 0 0 / 0.06));
+}
+.od-select-menu.portal {
+  position: fixed;
+}
+.od-select-menu.inline {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: min(280px, 48vh);
+}
+.od-select-option {
+  width: 100%;
+  min-width: 0;
+  min-height: var(--ui-menu-item-min-height, 2rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 16px;
+  align-items: center;
+  gap: 8px;
+  padding: var(--ui-space-6, 0.375rem) var(--ui-layout-menu-item-padding-inline, 0.5rem);
+  color: var(--text);
+  background: transparent;
+  border: 0;
+  border-radius: var(--ui-radius-small, 0.25rem);
+  font: inherit;
+  font-size: var(--ui-label-font-size, 0.875rem);
+  text-align: left;
+  cursor: pointer;
+  line-height: var(--ui-label-line-height, 1.25rem);
+  height: auto;
+  font-weight: 500;
+}
+.od-select-option:hover:not(:disabled),
+.od-select-option.active:not(:disabled) {
+  background: var(--bg-subtle);
+}
+.od-select-option.selected {
+  color: var(--ui-selected-foreground, #171717);
+  background: var(--ui-selected-background, #f5f5f5);
+  font-weight: 500;
+}
+.od-select-option.selected:hover:not(:disabled),
+.od-select-option.selected.active:not(:disabled) {
+  background: color-mix(in srgb, var(--selected) 13%, var(--bg-subtle));
+}
+.od-select-option:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.od-select-option-check {
+  display: inline-flex;
+  justify-content: center;
+  color: var(--selected);
+  opacity: 0;
+}
+.od-select-option.selected .od-select-option-check {
+  opacity: 1;
+}
+.od-select-group + .od-select-group {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border-soft);
+}
+.od-select-group-label {
+  padding: 6px 8px 4px;
+  color: var(--text-faint);
+  font-size: var(--ui-label-font-size, 0.875rem);
+  font-weight: 500;
+  line-height: var(--ui-label-line-height, 1.25rem);
+}
+
+/* Shared shadcn state treatment for native controls retained for compatibility. */
+input[aria-invalid='true'], textarea[aria-invalid='true'], select[aria-invalid='true'] {
+  border-color: var(--ui-destructive, var(--red));
+  box-shadow: none;
+}
+input[readonly], textarea[readonly] {
+  background: var(--ui-muted, var(--bg-subtle));
+  color: var(--ui-foreground, var(--text));
+}

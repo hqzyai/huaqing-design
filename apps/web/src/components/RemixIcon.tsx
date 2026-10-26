@@ -1,0 +1,168 @@
+import type { CSSProperties } from 'react';
+import { BRAND_ICON_PATHS } from './brand-icon-paths';
+import { LUCIDE_ICONS } from './lucide-icons';
+import { LucideGlyph } from './LucideGlyph';
+
+interface RemixIconProps {
+  name: string;
+  size?: number;
+  className?: string;
+  style?: CSSProperties;
+}
+
+// Compatibility names are consumed by persisted/dynamic UI mappings. The renderer
+// uses Lucide; retaining these keys does not retain the old general-purpose set.
+const LEGACY_NAMES: Readonly<Record<string, keyof typeof LUCIDE_ICONS>> = {
+  'book-open-line': 'book-open',
+  'add-fill': 'plus',
+  'add-line': 'plus',
+  'arrow-down-s-line': 'chevron-down',
+  'arrow-go-back-line': 'undo',
+  'arrow-go-forward-line': 'redo',
+  'arrow-left-line': 'arrow-left',
+  'arrow-left-s-line': 'chevron-left',
+  'arrow-right-line': 'arrow-right',
+  'arrow-right-s-line': 'chevron-right',
+  'arrow-up-s-line': 'chevron-up',
+  'arrow-up-line': 'arrow-up',
+  'artboard-2-line': 'artboard',
+  'artboard-line': 'swatchbook',
+  'attachment-2': 'attach',
+  'bar-chart-box-line': 'bar-chart-box',
+  'battery-charge-line': 'battery',
+  'brain-line': 'brain',
+  'broadcast-line': 'broadcast',
+  'brush-line': 'draw',
+  'camera-line': 'camera',
+  'chat-1-line': 'comment',
+  'chat-3-line': 'comment',
+  'chat-new-line': 'comment',
+  'check-line': 'check',
+  'checkbox-blank-line': 'checkbox-blank',
+  'checkbox-line': 'checkbox',
+  'close-line': 'close',
+  'code-s-slash-line': 'code',
+  'computer-line': 'computer',
+  'dashboard-fill': 'dashboard',
+  'dashboard-line': 'dashboard',
+  'delete-bin-line': 'trash',
+  'download-2-line': 'download',
+  'download-line': 'download',
+  'drag-move-line': 'grip-vertical',
+  'edit-line': 'edit',
+  'equalizer-line': 'sliders',
+  'error-warning-line': 'alert-triangle',
+  'external-link-line': 'external-link',
+  'eye-line': 'eye',
+  'eye-off-line': 'eye-off',
+  'file-code-line': 'file-code',
+  'file-copy-line': 'copy',
+  'file-fill': 'file',
+  'file-history-fill': 'file-history',
+  'file-line': 'file',
+  'file-ppt-line': 'slides',
+  'file-text-line': 'file-text',
+  'file-zip-line': 'file-archive',
+  'folder-fill': 'folder-filled',
+  'folder-line': 'folder',
+  'fullscreen-exit-line': 'minimize',
+  'fullscreen-line': 'maximize',
+  'git-branch-line': 'fork',
+  'global-fill': 'globe',
+  'global-line': 'globe',
+  'grid-fill': 'grid',
+  'grid-line': 'grid',
+  'group-fill': 'users',
+  'group-line': 'users',
+  'hammer-line': 'hammer',
+  'history-line': 'history',
+  'home-5-fill': 'home-filled',
+  'home-5-line': 'home',
+  'image-add-line': 'image-add',
+  'image-line': 'image',
+  'information-line': 'info',
+  'input-field': 'input',
+  'kanban-view': 'kanban',
+  'layout-grid-line': 'blocks',
+  'layout-line': 'layout',
+  'lightbulb-line': 'lightbulb',
+  'link': 'link',
+  'list-check-2': 'tasks',
+  'loader-4-line': 'spinner',
+  'lock-line': 'lock',
+  'login-circle-line': 'log-in',
+  'logout-box-r-line': 'log-out',
+  'mail-line': 'mail',
+  'mark-pen-line': 'highlighter',
+  'message-3-line': 'comment',
+  'mic-line': 'mic',
+  'moon-line': 'moon',
+  'more-2-line': 'more-vertical',
+  'more-line': 'more-horizontal',
+  'notification-3-line': 'bell',
+  'paint-line': 'paint-bucket',
+  'palette-fill': 'palette-filled',
+  'palette-line': 'palette',
+  'pages-line': 'pages',
+  'pencil-line': 'pencil',
+  'planet-line': 'orbit',
+  'play-line': 'play',
+  'puzzle-fill': 'integrations-filled',
+  'puzzle-line': 'puzzle',
+  'question-line': 'help-circle',
+  'refresh-line': 'refresh',
+  'reset-left-line': 'reload',
+  'screenshot-2-line': 'screenshot',
+  'search-line': 'search',
+  'send-plane-2-line': 'send',
+  'send-plane-line': 'send',
+  'settings-3-fill': 'settings',
+  'settings-3-line': 'settings',
+  'settings-line': 'settings',
+  'share-circle-line': 'share',
+  'share-forward-line': 'share',
+  'side-bar-line': 'panel-left',
+  'slideshow-3-line': 'present',
+  'slideshow-line': 'present',
+  'smartphone-line': 'smartphone',
+  'sound-module-line': 'tweaks',
+  'sparkling-line': 'sparkles',
+  'stack-fill': 'layers-filled',
+  'star-line': 'star',
+  'stop-line': 'stop',
+  'subtract-line': 'minus',
+  'sun-foggy-line': 'sun-moon',
+  'sun-line': 'sun',
+  'tablet-line': 'tablet',
+  'team-line': 'users',
+  'terminal-box-line': 'terminal',
+  'text': 'text',
+  'thumb-down-line': 'thumbs-down',
+  'thumb-up-line': 'thumbs-up',
+  'translate-2': 'translate',
+  'upload-2-line': 'upload',
+  'upload-cloud-line': 'upload-cloud',
+  'upload-cloud-2-line': 'upload-cloud',
+  'video-ai-line': 'video-ai',
+  'volume-up-line': 'volume',
+  'robot-2-line': 'robot',
+  'key-2-line': 'key',
+  'zoom-in-line': 'zoom-in',
+  'zoom-out-line': 'zoom-out',
+};
+
+export function RemixIcon({ name, size = 16, className, style }: RemixIconProps) {
+  const commonStyle: CSSProperties = { display: 'inline-block', verticalAlign: 'middle', flexShrink: 0, ...style };
+  const key = Object.hasOwn(LEGACY_NAMES, name) ? LEGACY_NAMES[name] : undefined;
+  if (key) {
+    return <LucideGlyph glyph={LUCIDE_ICONS[key]} size={size} className={className} style={commonStyle} />;
+  }
+  // Preserve brand glyphs and the empty, same-size placeholder for unknown names.
+  const d = Object.hasOwn(BRAND_ICON_PATHS, name) ? BRAND_ICON_PATHS[name] : undefined;
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor"
+      aria-hidden="true" focusable="false" className={className} style={commonStyle}>
+      {d ? <path d={d} /> : null}
+    </svg>
+  );
+}

@@ -1,0 +1,476 @@
+/*
+ * Inline <od-card> rendering — the display-only memory cards interleaved with
+ * assistant prose. Quiet themed surfaces keep these inside the chat flow as
+ * annotations, not heavy panels. Animation
+ * easing follows the repo convention (ease-out cubic-bezier).
+ */
+
+.card {
+  margin: 6px 0;
+  font-size: var(--ui-body-font-size);
+  color: var(--text);
+  line-height: var(--ui-body-line-height);
+}
+
+/* ----- task-brief: collapsed chip → expandable brief --------------------- */
+
+.briefChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  max-width: 100%;
+  padding: 5px 10px;
+  border: 1px solid var(--border-soft, var(--border));
+  border-radius: var(--ui-radius-small);
+  background: var(--bg-subtle);
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background 0.14s cubic-bezier(0.23, 1, 0.32, 1),
+    border-color 0.14s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.briefChip:hover {
+  background: var(--bg-muted);
+  border-color: var(--border-strong);
+}
+
+.briefChipIcon {
+  display: inline-flex;
+  color: var(--accent);
+}
+
+.briefChipLabel {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.briefChipSummary {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-muted);
+}
+
+.briefChipChevron {
+  display: inline-flex;
+  color: var(--text-faint);
+}
+
+.briefBody {
+  margin-top: 8px;
+  padding: 12px 14px;
+  border: 1px solid var(--border-soft, var(--border));
+  border-radius: var(--ui-radius-surface);
+  background: var(--bg-panel);
+}
+
+.briefTitle {
+  margin: 0 0 10px;
+  font-size: var(--ui-card-title-font-size);
+  font-weight: 600;
+  line-height: var(--ui-card-title-line-height);
+}
+
+.briefFields {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 14px;
+  margin: 0;
+}
+
+.briefField {
+  display: contents;
+}
+
+.briefField dt {
+  font-size: var(--ui-caption-font-size);
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  align-self: baseline;
+  padding-top: 1px;
+  line-height: var(--ui-caption-line-height);
+}
+
+.briefField dd {
+  margin: 0;
+  color: var(--text);
+  line-height: 1.45;
+}
+
+.briefNote {
+  margin: 10px 0 0;
+  font-size: var(--ui-caption-font-size);
+  line-height: var(--ui-caption-line-height);
+  color: var(--text-muted);
+}
+
+/* ----- memory-applied: one-line chip with type-dotted refs --------------- */
+
+.appliedCard {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--ui-space-6) var(--ui-space-8);
+  padding: var(--ui-space-6) var(--ui-space-8);
+  border: 1px solid var(--border-soft, var(--border));
+  border-radius: var(--ui-radius-panel);
+  background: var(--bg-subtle);
+}
+
+.appliedIcon {
+  display: inline-flex;
+  color: var(--accent);
+}
+
+.appliedSummary {
+  font-weight: 500;
+}
+
+.appliedRefs {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+
+.appliedRef {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--ui-caption-font-size);
+  color: var(--text-muted);
+  line-height: var(--ui-caption-line-height);
+}
+
+.refDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  background: var(--text-faint);
+}
+
+.refName {
+  white-space: nowrap;
+}
+
+/* Category dots — quiet, distinguishable hues for each memory bucket. */
+.dotProfile {
+  background: var(--purple);
+}
+.dotUser {
+  background: var(--blue);
+}
+.dotFeedback {
+  background: var(--amber);
+}
+.dotProject {
+  background: var(--green);
+}
+.dotReference {
+  background: var(--text-soft);
+}
+.dotRule {
+  background: var(--accent);
+}
+
+/* ----- verify-scorecard: status header over rubric rows ------------------ */
+
+.scorecard {
+  padding: 0;
+  border: 1px solid var(--border-soft, var(--border));
+  border-radius: var(--ui-radius-panel);
+  background: var(--bg-panel);
+  overflow: hidden;
+}
+
+.scorecardHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 11px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 140ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.scorecardHead:hover {
+  background: transparent;
+}
+
+.scorecardHead:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 38%, transparent);
+  outline-offset: 2px;
+}
+
+.scorecardPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 9px;
+  border-radius: var(--ui-radius-small);
+  font-size: var(--ui-badge-font-size);
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: uppercase;
+  background: var(--bg-fill-tertiary);
+  color: var(--text-muted);
+  line-height: var(--ui-badge-line-height);
+}
+
+.pillPass {
+  background: var(--green-bg);
+  color: var(--green);
+}
+
+.pillPartial {
+  background: var(--amber-bg);
+  color: var(--amber);
+}
+
+.pillFail {
+  background: var(--red-bg);
+  color: var(--red);
+}
+
+.scorecardTitle {
+  font-weight: 600;
+}
+
+.scorecardSummary {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: var(--ui-caption-font-size);
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: var(--ui-caption-line-height);
+}
+
+.scorecardCount {
+  flex: 0 0 auto;
+  color: var(--text-faint);
+  font-size: var(--ui-caption-font-size);
+  font-variant-numeric: tabular-nums;
+  line-height: var(--ui-caption-line-height);
+}
+
+.scorecardChevron {
+  display: inline-flex;
+  flex: 0 0 auto;
+  color: var(--text-faint);
+  transition: transform 140ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.scorecardChevronOpen {
+  transform: rotate(180deg);
+}
+
+.scoreRows {
+  list-style: none;
+  margin: 0;
+  padding: 10px 11px 11px;
+  border-top: 1px solid var(--border-soft, var(--border));
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.scoreRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.scoreRowIcon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  margin-top: 1px;
+  color: var(--text-faint);
+}
+
+.rowPass .scoreRowIcon {
+  color: var(--green);
+}
+
+.rowFail .scoreRowIcon {
+  color: var(--red);
+}
+
+.rowFixed .scoreRowIcon {
+  color: var(--amber);
+}
+
+.scoreRowBody {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.scoreRowRule {
+  line-height: 1.4;
+}
+
+.scoreRowNote {
+  font-size: var(--ui-caption-font-size);
+  line-height: var(--ui-caption-line-height);
+  color: var(--text-muted);
+}
+
+/* ----- rule-proposal: name/assertion/check/rationale + actions ----------- */
+
+.ruleCard {
+  padding: var(--ui-space-12) var(--ui-space-12);
+  border: 1px solid var(--border-soft, var(--border));
+  border-radius: var(--ui-radius-panel);
+  background: var(--bg-panel);
+  color: var(--text);
+}
+
+.ruleHead {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.ruleHeadIcon {
+  display: inline-flex;
+  color: var(--accent);
+}
+
+.ruleKicker {
+  font-size: var(--ui-caption-font-size);
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  line-height: var(--ui-caption-line-height);
+}
+
+.ruleSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ruleName {
+  margin: 0;
+  font-size: var(--ui-body-font-size);
+  font-weight: 500;
+  color: var(--text-strong);
+  line-height: var(--ui-body-line-height);
+}
+
+.ruleDescription {
+  margin: 0;
+  font-size: var(--ui-body-font-size);
+  color: var(--text-muted);
+  line-height: var(--ui-body-line-height);
+}
+
+.ruleFacts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 14px;
+  margin: 4px 0 0;
+}
+
+.ruleFacts > div {
+  display: contents;
+}
+
+.ruleFacts dt {
+  font-size: var(--ui-caption-font-size);
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  align-self: baseline;
+  padding-top: 1px;
+  line-height: var(--ui-caption-line-height);
+}
+
+.ruleFacts dd {
+  margin: 0;
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.ruleFields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ruleFieldLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: var(--ui-label-font-size);
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  line-height: var(--ui-label-line-height);
+}
+
+.ruleFieldLabel input,
+.ruleFieldLabel textarea {
+  width: 100%;
+  font-size: var(--ui-body-font-size);
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--text);
+  line-height: var(--ui-body-line-height);
+}
+
+.ruleError {
+  margin: 8px 0 0;
+  font-size: var(--ui-caption-font-size);
+  color: var(--red);
+  line-height: var(--ui-caption-line-height);
+}
+
+.ruleActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.ruleAction {
+  font-size: var(--ui-body-font-size);
+  padding: 5px 12px;
+  line-height: var(--ui-body-line-height);
+}
+
+.ruleSaved {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.ruleSavedIcon {
+  display: inline-flex;
+  color: currentColor;
+}
+
+.ruleSavedLabel {
+  font-weight: 500;
+}
