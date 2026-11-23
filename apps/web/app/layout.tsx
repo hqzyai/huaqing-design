@@ -2,13 +2,12 @@ import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import { I18nProvider } from '../src/i18n';
 import { AnalyticsProvider } from '../src/analytics/provider';
-import { PRODUCT_NAME } from '../src/config/branding';
 import '@excalidraw/excalidraw/index.css';
 import '../src/index.css';
 import '../src/styles/home/index.css';
 
 export const metadata: Metadata = {
-  title: PRODUCT_NAME,
+  title: '华清智言 · Huaqing Design',
   icons: {
     icon: { url: '/hqzyai-logomark.svg', type: 'image/svg+xml' },
   },
