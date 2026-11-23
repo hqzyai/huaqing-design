@@ -1,6 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { BrowserSessionBoundary } from '../../src/components/auth/BrowserSessionBoundary';
 
 import { installErrorHandlers } from '../../src/analytics/error-tracking';
 import { MatrixLoader } from '../../src/components/MatrixLoader';
@@ -38,5 +39,5 @@ const App = dynamic(() => import('../../src/App').then((m) => m.App), {
 });
 
 export function ClientApp() {
-  return <App />;
+  return <BrowserSessionBoundary><App /></BrowserSessionBoundary>;
 }

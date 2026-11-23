@@ -1,0 +1,3 @@
+.hq-browser-logout { margin-top: 12px; }
+.hq-browser-logout button { width: 100%; justify-content: flex-start; cursor: pointer; }
+.hq-browser-logout p { color: var(--text-danger, #b42318); font-size: 12px; }

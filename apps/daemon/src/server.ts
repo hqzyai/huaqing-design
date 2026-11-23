@@ -79,7 +79,6 @@ export {
 import {
   isStaticSpaFallbackRequest,
   registerStaticSpaFallback,
-  resolveStaticSpaFallbackPath,
 } from './static-spa.js';
 export {
   isStaticSpaFallbackRequest,
@@ -845,6 +844,7 @@ import { registerChatRoutes } from './routes/chat.js';
 import { registerRunRoutes } from './routes/runs.js';
 import { registerStrategyRolloutRoutes } from './routes/strategy-rollout.js';
 import { registerTerminalRoutes } from './routes/terminal.js';
+import { registerBrowserLoginRoutes } from './routes/browser-session.js';
 import { registerBrowserSessionRoutes } from './routes/browser-sessions.js';
 import { createTerminalService } from './terminals.js';
 import { createBrowserSessionService } from './browser-sessions.js';
@@ -1105,7 +1105,6 @@ import {
 } from './library-tokens.js';
 import { listLibraryTokenOrigins } from './library-store.js';
 import {
-  API_TOKEN_BASIC_CHALLENGE,
   apiBasicUsernameFromEnv,
   apiTokenAuthorizationMatches,
   apiTokenFromEnv,
@@ -2910,6 +2909,11 @@ export async function startServer({
   // (registered before the global parser so it claims the body first).
   app.use('/api/brands/:id/extract-from-html', express.json({ limit: '32mb' }));
   app.use(express.json({ limit: '4mb' }));
+  const browserLogin = registerBrowserLoginRoutes(app, {
+    enabled: apiTokenAuthEnabled,
+    apiToken,
+    basicUsername: apiBasicUsername,
+  });
   const projectPreviewScopes = createProjectPreviewScopeRegistry();
 
   // Plan §3.K1 — API-token middleware.
@@ -2951,6 +2955,12 @@ export async function startServer({
       // UI which has no proxy in the path.
       if (isLoopbackPeerAddress(req.socket?.remoteAddress)) return next();
       if (apiTokenAuthorizationMatches(req.get('authorization'), apiToken, apiBasicUsername)) return next();
+      if (browserLogin.accepts(req)) {
+        // Existing route-level authorization consumes this trusted server-side
+        // header. The API token never enters the browser or session cookie.
+        req.headers.authorization = `Bearer ${apiToken}`;
+        return next();
+      }
       if (
         req.method === 'POST'
         && PROJECT_RUN_SCOPED_EXPORT_PATH_RE.test(req.path)
@@ -2961,30 +2971,13 @@ export async function startServer({
       ) {
         return next();
       }
-      res.setHeader('WWW-Authenticate', API_TOKEN_BASIC_CHALLENGE);
+      res.setHeader('WWW-Authenticate', 'Bearer');
       return res.status(401).json({
         error: {
           code: 'API_TOKEN_REQUIRED',
           message: 'Authorization: Bearer <OD_API_TOKEN> or browser Basic authentication required',
         },
       });
-    });
-
-    // Docker Desktop forwards host-browser traffic across its bridge, so the
-    // daemon correctly sees a non-loopback peer. Challenge the SPA document
-    // navigation before serving any shell bytes; browsers then cache the Basic
-    // credentials for same-origin /api requests. Static assets do not need a
-    // separate challenge because the authenticated shell is the only entry
-    // point and API routes still enforce credentials independently.
-    app.use((req, res, next) => {
-      if (isLoopbackPeerAddress(req.socket?.remoteAddress)) return next();
-      if (resolveStaticSpaFallbackPath(req, staticDir) === null) return next();
-      if (apiTokenAuthorizationMatches(req.get('authorization'), apiToken, apiBasicUsername)) return next();
-
-      res.setHeader('WWW-Authenticate', API_TOKEN_BASIC_CHALLENGE);
-      return res.status(401).type('text/plain').send(
-        `OpenDesign authentication required. Use username "${apiBasicUsername}" and OD_API_TOKEN as the password.`,
-      );
     });
   }
 

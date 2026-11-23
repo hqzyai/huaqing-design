@@ -190,14 +190,12 @@ describe.each(['open-design', 'hqzy-design'])('browser authentication for non-lo
 
   it('authenticates the browser without weakening API clients or probes', async () => {
     const unauthenticatedShell = await fetch(`${baseUrl}/`);
-    expect(unauthenticatedShell.status).toBe(401);
-    expect(unauthenticatedShell.headers.get('www-authenticate')).toBe(
-      'Basic realm="OpenDesign", charset="UTF-8"',
-    );
+    expect(unauthenticatedShell.status).toBe(200);
+    expect(unauthenticatedShell.headers.get('www-authenticate')).toBeNull();
     expect(unauthenticatedShell.headers.get('set-cookie')).toBeNull();
-    const challengeBody = await unauthenticatedShell.text();
-    expect(challengeBody).not.toContain('docker shell');
-    expect(challengeBody).toContain(`username "${username}"`);
+    expect(await unauthenticatedShell.text()).toContain('docker shell');
+    const session = await fetch(`${baseUrl}/api/auth/session`);
+    expect(await session.json()).toEqual({ enabled: true, authenticated: false });
 
     const credentials = Buffer.from(`${username}:secret-test-token`).toString('base64');
     const basicApiResp = await fetch(`${baseUrl}/api/plugins`, {
@@ -237,7 +235,7 @@ describe.each(['open-design', 'hqzy-design'])('browser authentication for non-lo
 
       expect(resp.status).toBe(401);
       expect(resp.headers.get('www-authenticate')).toBe(
-        'Basic realm="OpenDesign", charset="UTF-8"',
+        'Bearer',
       );
     }
   });

@@ -1,3 +1,4 @@
+import { BrowserLogoutButton } from './auth/BrowserSessionBoundary';
 // Team-edition entry navigation rail (Lovart/Manus-style labeled column).
 //
 // Structure — faithfully ported from the design demo
@@ -1795,6 +1796,7 @@ export function EntryNavRail({
             </NavButton>
           </>
         )}
+        <BrowserLogoutButton />
       </div>
       </div>
 
