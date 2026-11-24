@@ -332,9 +332,8 @@ describe('workspace tabs chrome styles', () => {
     const pinnedProject = cssDeclarations(routinesCss, '.workspace-shell .workspace-tab.is-pinned');
 
     // Home never shrinks (flex-shrink 0) in either chrome…
-    expect(ruleValue(pinnedShared, 'flex')).toBe('0 0 52px');
-    // Round-4 skin: the pinned tab is a single-icon pill (~half a project tab).
-    expect(ruleValue(pinnedProject, 'flex')).toBe('0 0 78px');
+    expect(ruleValue(pinnedShared, 'flex')).toBe('0 0 var(--workspace-brand-width)');
+    expect(ruleValue(pinnedProject, 'flex')).toBe('0 0 var(--workspace-brand-width)');
     // …and stays stuck to the left edge with an opaque background so scrolled
     // project tabs pass behind it instead of squeezing it.
     expect(ruleValue(pinnedShared, 'position')).toBe('sticky');

@@ -66,6 +66,7 @@
 }
 
 .workspace-tabs-chrome.app-chrome-header {
+  --workspace-brand-width: 168px;
   min-width: 0;
   max-width: 100%;
   min-height: 44px;
@@ -356,10 +357,10 @@ html.od-radial-open .workspace-shell {
    visible even after the project tabs overflow into horizontal scroll. The
    opaque background keeps scrolled tabs from showing through it. */
 .workspace-tab.is-pinned {
-  width: 52px;
-  flex: 0 0 52px;
-  min-width: 52px;
-  max-width: 52px;
+  width: var(--workspace-brand-width);
+  flex: 0 0 var(--workspace-brand-width);
+  min-width: var(--workspace-brand-width);
+  max-width: var(--workspace-brand-width);
   display: flex;
   align-items: center;
   justify-content: center;

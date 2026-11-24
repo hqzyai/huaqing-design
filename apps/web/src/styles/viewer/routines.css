@@ -1206,7 +1206,7 @@
      button) and undocked (the strip's pinned entry tab). Without it the icon
      jumped 10px left on every entry→project→entry trip. */
   margin-left: 10px;
-  width: 78px;
+  width: var(--workspace-brand-width);
   height: 32px;
   padding: 0;
   border: 0;
@@ -1306,12 +1306,10 @@
    tabs from showing through it. Declared before .is-active so an active Home
    tab still picks up the active highlight. */
 .workspace-shell .workspace-tab.is-pinned {
-  /* Single-icon pill (~half a project tab): the Home button on a project page,
-     or the sidebar toggle on the Home page. */
-  flex: 0 0 78px;
-  width: 78px;
-  min-width: 78px;
-  max-width: 78px;
+  flex: 0 0 var(--workspace-brand-width);
+  width: var(--workspace-brand-width);
+  min-width: var(--workspace-brand-width);
+  max-width: var(--workspace-brand-width);
   grid-template-columns: minmax(0, 1fr);
   position: sticky;
   left: 0;

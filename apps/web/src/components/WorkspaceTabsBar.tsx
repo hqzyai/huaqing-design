@@ -650,17 +650,22 @@ function shouldRehomeAuthorizedProjectAfterSignIn({
 
 
 /** Brand artwork shares the existing Home/rail control and its accessible name. */
-function ChromeBrandLogo() {
+function ChromeBrandLogo({ showExpandIcon = false }: { showExpandIcon?: boolean }) {
   return (
-    <img
-      src="/hqzyai-logomark.svg"
-      width={793}
-      height={568}
-      alt=""
-      aria-hidden="true"
-      draggable={false}
-      className={`workspace-chrome-logo ${styles.brandLogo}`}
-    />
+    <span className={styles.brandIdentity}>
+      <span className={styles.brandMark} aria-hidden="true">
+        <img
+          src="/hqzyai-logomark.svg"
+          width={28}
+          height={28}
+          alt=""
+          draggable={false}
+          className={`workspace-chrome-logo ${styles.brandLogo}`}
+        />
+        {showExpandIcon && <Icon name="panel-left" size={20} className="workspace-chrome-logo-swap" />}
+      </span>
+      <span className={styles.brandName} title="Huaqing Design">Huaqing Design</span>
+    </span>
   );
 }
 
@@ -1791,11 +1796,7 @@ export function WorkspaceTabsBar({
                     }
                   }}
                 >
-                  <ChromeBrandLogo />
-                  {/* Collapsed-rail hover swaps the logo for the expand-sidebar
-                      glyph, so the button telegraphs its one action. CSS keys
-                      the swap off :not(.is-inert):hover. */}
-                  <Icon name="panel-left" size={20} className="workspace-chrome-logo-swap" aria-hidden />
+                  <ChromeBrandLogo showExpandIcon />
                 </Button>
               ) : isPinned && active ? (
                 /* Any other entry section (settings / all-projects / community /
@@ -1821,21 +1822,19 @@ export function WorkspaceTabsBar({
                   <Button
                     type="button"
                     className="workspace-tab__main"
+                    aria-label={isPinned ? t('entry.navHome') : undefined}
                     onClick={() => openTab(tab)}
                   >
-                    <span className={isPinned ? styles.brandSlot : 'workspace-tab__icon'} aria-hidden>
-                      {/* The pinned entry tab remembers its last section
-                          (settings / community / …), but clicking it always
-                          lands on home (openTab), so it must read as the Home
-                          button — the brand logo — not the remembered
-                          section's icon. */}
-                      {isPinned ? (
-                        <ChromeBrandLogo />
-                      ) : (
-                        <Icon name={display.icon} size={16} />
-                      )}
-                    </span>
-                    <span className="workspace-tab__label">{display.title}</span>
+                    {isPinned ? (
+                      <ChromeBrandLogo />
+                    ) : (
+                      <>
+                        <span className="workspace-tab__icon" aria-hidden>
+                          <Icon name={display.icon} size={16} />
+                        </span>
+                        <span className="workspace-tab__label">{display.title}</span>
+                      </>
+                    )}
                   </Button>
                   {isPinned ? null : (
                     <Button
